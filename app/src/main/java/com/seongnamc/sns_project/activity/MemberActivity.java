@@ -159,7 +159,7 @@ import java.io.InputStream;
             StorageReference storageRef = storage.getReference();
 
 
-            final StorageReference mountainImagesRef = storageRef.child(user.getUid()+"/profileImage.jpg");
+            final StorageReference mountainImagesRef = storageRef.child("user/"+user.getUid()+"/profileImage.jpg");
 
 
             if(ProfilePath == null) {

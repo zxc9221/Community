@@ -1,21 +1,20 @@
 package com.seongnamc.sns_project;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 public class Writeinfo {
     private String title;
-    private String contents;
+    private ArrayList<String> contents;
     private String publisher;
+    private Date createdAt;
     private String imageUrl;
 
-    public  Writeinfo(String title, String contents, String publisher) {
+    public  Writeinfo(String title, ArrayList<String> contents, String publisher, Date createdAt) {
         this.title = title;
         this.contents = contents;
         this.publisher = publisher;
-    }
-    public  Writeinfo(String title, String contents, String publisher, String imageUrl) {
-        this.title = title;
-        this.contents = contents;
-        this.publisher = publisher;
-        this.imageUrl = imageUrl;
+        this.createdAt = createdAt;
     }
 
     public String getTitle() {
@@ -25,10 +24,10 @@ public class Writeinfo {
         this.title = title;
     }
 
-    public String getContents() {
+    public ArrayList<String> getContents() {
         return this.contents;
     }
-    public void setContents(String contents) {
+    public void setContents(ArrayList<String> contents) {
         this.contents = contents;
     }
 
@@ -37,10 +36,8 @@ public class Writeinfo {
     }
     public void setPublisher(String publisher) { this.publisher = publisher; }
 
-    public String getImageUrl() {
-        return this.imageUrl;
+    public Date getCreatedAt() {
+        return this.createdAt;
     }
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 }

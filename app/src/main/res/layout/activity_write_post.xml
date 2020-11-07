@@ -1,36 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp">
 
-    <EditText
-        android:id="@+id/titleeditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="제목"
-        android:inputType="textPersonName"
-        tools:layout_editor_absoluteX="18dp"
-        tools:layout_editor_absoluteY="17dp" />
 
-    <EditText
-        android:id="@+id/contentsMultiLine"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="내용"
-        android:inputType="textMultiLine"
-        android:lines="10"
-        tools:layout_editor_absoluteX="9dp"
-        tools:layout_editor_absoluteY="63dp" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/addpostButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="확인" />
-</LinearLayout>
+        <EditText
+            android:id="@+id/titleeditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="제목"
+            android:inputType="textPersonName"
+            tools:layout_editor_absoluteX="18dp"
+            tools:layout_editor_absoluteY="17dp" />
+
+        <LinearLayout
+            android:id="@+id/contentslayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="내용"
+                android:inputType="textMultiLine"
+                tools:layout_editor_absoluteX="9dp"
+                tools:layout_editor_absoluteY="63dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/picturebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="사진" />
+
+            <Button
+                android:id="@+id/vidiobutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="동영상" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/addpostButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="확인" />
+    </LinearLayout>
+
+</ScrollView>
