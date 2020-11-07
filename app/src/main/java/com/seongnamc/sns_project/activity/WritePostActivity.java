@@ -9,14 +9,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresPermission;
 
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -48,6 +51,8 @@ public class WritePostActivity extends BasicActivity {
             switch (v.getId()){
                 case R.id.addpostButton :
                     Log.d("등록","등록");
+                    uploadContents();
+                    myStartActivity(MainActivity.class);
                     break;
 
 
@@ -56,7 +61,7 @@ public class WritePostActivity extends BasicActivity {
 
     };
 
-    private void saveprofile(){
+    private void uploadContents(){
         final String title = ((EditText) findViewById(R.id.titleeditText)).getText().toString();
         final String contents = ((EditText) findViewById(R.id.contentsMultiLine)).getText().toString();
 
@@ -69,8 +74,8 @@ public class WritePostActivity extends BasicActivity {
             final StorageReference mountainImagesRef = storageRef.child(user.getUid()+"/profileImage.jpg");
 
 
-            Memberinfo info = new  Writeinfo(title, contents);
 
+            Writeinfo info = new  Writeinfo(title, contents, user.getUid());
             upLoaderDb(info);
 
         }
@@ -79,27 +84,22 @@ public class WritePostActivity extends BasicActivity {
         }
     }
 
-    private void upLoaderDb(Memberinfo info){
+    private void upLoaderDb(Writeinfo info){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(user.getUid())
-                .set(info)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("contents").add(info)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        StartToast("회원정보가 등록 되었습니다.");
-                        myStartActivity(MainActivity.class);
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, ""+documentReference.getId());
                     }
-
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        StartToast("회원정보의 등록을 실패하였습니다 .");
-                        Log.e("error", e + "");
+                        Log.d(TAG, "",e);
                     }
                 });
-
     }
 
     private void StartToast(String text){
