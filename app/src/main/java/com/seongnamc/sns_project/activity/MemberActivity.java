@@ -4,8 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -34,7 +31,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.seongnamc.sns_project.Memberinfo;
 import com.seongnamc.sns_project.R;
-import com.seongnamc.sns_project.fragment.Camera2BasicFragment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,8 +53,8 @@ import java.io.InputStream;
 
         profileView = findViewById(R.id.profileView);
         findViewById(R.id.saveButton).setOnClickListener(onClickListener);
-        findViewById(R.id.gallery).setOnClickListener(onClickListener);
-        findViewById(R.id.picture).setOnClickListener(onClickListener);
+        findViewById(R.id.vidioModify).setOnClickListener(onClickListener);
+        findViewById(R.id.deletePost).setOnClickListener(onClickListener);
         profileView.setOnClickListener(onClickListener);
 
 
@@ -100,7 +96,7 @@ import java.io.InputStream;
                         cardView.setVisibility(View.VISIBLE);
                     }
                     break;
-                case R.id.gallery:
+                case R.id.vidioModify:
                     if (ContextCompat.checkSelfPermission(
                             MemberActivity.this , Manifest.permission.READ_EXTERNAL_STORAGE) !=
                             PackageManager.PERMISSION_GRANTED) {
@@ -115,10 +111,10 @@ import java.io.InputStream;
                         }
                     }
                     else{
-                        myStartActivity(GalleryActivity.class);
+                        PostActivity(GalleryActivity.class,"image");
                     }
                     break;
-                case R.id.picture:
+                case R.id.deletePost:
                     myStartActivity(CameraActivity.class);
                     break;
 
@@ -248,9 +244,10 @@ import java.io.InputStream;
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 0);
     }
-     private void myCameraActivity(Class c) {
+     private void PostActivity(Class c, String media) {
          Intent intent = new Intent(this, c);
-         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+         intent.putExtra("media",media);
          startActivityForResult(intent, 0);
      }
 
