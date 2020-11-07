@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "804933408238",
+    "firebase_url": "https://sns-project-d9434.firebaseio.com",
+    "project_id": "sns-project-d9434",
+    "storage_bucket": "sns-project-d9434.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804933408238:android:f31b179f835c948ac2eaff",
+        "android_client_info": {
+          "package_name": "com.seongnamc.sns_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804933408238-lpdorjct8jsmsjvcucscl0ckpf74v1ph.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpkWkv1TjijowFwwKWCFnZ23H5P7jjpcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804933408238-lpdorjct8jsmsjvcucscl0ckpf74v1ph.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
