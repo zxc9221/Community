@@ -15,15 +15,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresPermission;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCanceledListener;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -32,9 +27,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.seongnamc.sns_project.Memberinfo;
 import com.seongnamc.sns_project.R;
-import com.seongnamc.sns_project.Writeinfo;
+import com.seongnamc.sns_project.Postinfo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,6 +46,8 @@ public class WritePostActivity extends BasicActivity {
     private ImageView selectedImageView;
     private EditText selectedEditText;
     int successCount = 0;
+
+    private RelativeLayout loaderLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +76,8 @@ public class WritePostActivity extends BasicActivity {
         findViewById(R.id.vidioModify).setOnClickListener(onClickListner);
         findViewById(R.id.deletePost).setOnClickListener(onClickListner);
 
+        loaderLayout = findViewById(R.id.loaderLayout);
+
 
     }
 
@@ -88,7 +86,7 @@ public class WritePostActivity extends BasicActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.addpostButton :
-                    uploadContents();
+                    storageUploader();
                     break;
                 case R.id.picturebutton :
                     PostActivity(GalleryActivity.class, "image");
@@ -179,7 +177,7 @@ public class WritePostActivity extends BasicActivity {
         }
     }
 
-    private void uploadContents() {
+    private void storageUploader() {
         final String title = ((EditText) findViewById(R.id.titleeditText)).getText().toString();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         // Create a storage reference from our app
@@ -192,6 +190,7 @@ public class WritePostActivity extends BasicActivity {
             ArrayList<String> contentsList = new ArrayList<>();
             int pathCount = 0;
 
+            loaderLayout.setVisibility(View.VISIBLE);
 
             for (int i = 0; i < parent.getChildCount(); i++) {
                 LinearLayout linearLayout = (LinearLayout) parent.getChildAt((i));
@@ -201,10 +200,6 @@ public class WritePostActivity extends BasicActivity {
                         String text = ((EditText) view).getText().toString();
                         if (text.length() > 0) {
                             contentsList.add(text);
-                        }
-                        if(parent.getChildCount() == 1){
-                            Writeinfo info = new Writeinfo(title, contentsList, user.getUid(), new Date());
-                            upLoaderDb(documentReference, info);
                         }
 
                     } else {
@@ -231,9 +226,10 @@ public class WritePostActivity extends BasicActivity {
                                         public void onSuccess(Uri uri) {
                                             contentsList.set(index, uri.toString());
                                             successCount++;
+                                            Log.d("dddddd","in");
                                             if(pathList.size() == successCount){
-                                                Writeinfo info = new Writeinfo(title, contentsList, user.getUid(), new Date());
-                                                upLoaderDb(documentReference, info);
+                                                Postinfo info = new Postinfo(title, contentsList, user.getUid(), new Date());
+                                                storeUploader(documentReference, info);
                                             }
                                         }
                                     });
@@ -252,6 +248,10 @@ public class WritePostActivity extends BasicActivity {
                 }
 
             }
+            if(pathList.size() == 0){
+                Postinfo info = new Postinfo(title, contentsList, user.getUid(), new Date());
+                storeUploader(documentReference, info);
+            }
         } else {
             StartToast("제목을 입력해주세요.");
         }
@@ -259,12 +259,13 @@ public class WritePostActivity extends BasicActivity {
 
 
 
-    private void upLoaderDb(DocumentReference  documentReference, Writeinfo info){
+    private void storeUploader(DocumentReference  documentReference, Postinfo info){
         documentReference.set(info)
             .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(TAG, "DocumentSnapshot successfully written!");
+                    loaderLayout.setVisibility(View.GONE);
                     myStartActivity(MainActivity.class);
                 }
             })
@@ -272,6 +273,7 @@ public class WritePostActivity extends BasicActivity {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.w(TAG, "Error writing document", e);
+                    loaderLayout.setVisibility(View.GONE);
                 }
             });
     }

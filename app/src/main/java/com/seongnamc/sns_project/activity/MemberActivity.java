@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,8 +43,12 @@ import java.io.InputStream;
     private FirebaseAuth mAuth;
     private ImageView profileView;
     private String ProfilePath;
+    private RelativeLayout loaderLayout;
     final FirebaseUser  user = FirebaseAuth.getInstance().getCurrentUser();
-    @Override
+    private CardView cardView;
+
+
+     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_member_init);
@@ -53,11 +58,11 @@ import java.io.InputStream;
 
         profileView = findViewById(R.id.profileView);
         findViewById(R.id.saveButton).setOnClickListener(onClickListener);
-        findViewById(R.id.vidioModify).setOnClickListener(onClickListener);
-        findViewById(R.id.deletePost).setOnClickListener(onClickListener);
+        findViewById(R.id.galleryButton).setOnClickListener(onClickListener);
+        findViewById(R.id.pictureBuutton).setOnClickListener(onClickListener);
         profileView.setOnClickListener(onClickListener);
 
-
+        loaderLayout = findViewById(R.id.loaderLayout);
 
     }
 
@@ -85,10 +90,10 @@ import java.io.InputStream;
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.saveButton:
-                    saveprofile();
+                    storageUploader();
                     break;
                 case R.id.profileView:
-                    CardView cardView = findViewById(R.id.ButtonView);
+                    cardView = findViewById(R.id.ButtonView);
                     if(cardView.getVisibility() == View.VISIBLE){
                         cardView.setVisibility(View.GONE);
                     }
@@ -96,7 +101,7 @@ import java.io.InputStream;
                         cardView.setVisibility(View.VISIBLE);
                     }
                     break;
-                case R.id.vidioModify:
+                case R.id.galleryButton:
                     if (ContextCompat.checkSelfPermission(
                             MemberActivity.this , Manifest.permission.READ_EXTERNAL_STORAGE) !=
                             PackageManager.PERMISSION_GRANTED) {
@@ -112,10 +117,13 @@ import java.io.InputStream;
                     }
                     else{
                         PostActivity(GalleryActivity.class,"image");
+                        cardView.setVisibility(View.GONE);
+
                     }
                     break;
-                case R.id.deletePost:
+                case R.id.pictureBuutton:
                     myStartActivity(CameraActivity.class);
+                    cardView.setVisibility(View.GONE);
                     break;
 
             }
@@ -143,7 +151,7 @@ import java.io.InputStream;
 
 
 
-    private void saveprofile(){
+    private void storageUploader(){
         final String name = ((EditText) findViewById(R.id.nameEditText)).getText().toString();
         final String phonenumber = ((EditText) findViewById(R.id.phonenumberEditText)).getText().toString();
         final String address = ((EditText) findViewById(R.id.addressEditText)).getText().toString();
@@ -153,15 +161,14 @@ import java.io.InputStream;
             FirebaseStorage storage = FirebaseStorage.getInstance();
             // Create a storage reference from our app
             StorageReference storageRef = storage.getReference();
-
-
             final StorageReference mountainImagesRef = storageRef.child("user/"+user.getUid()+"/profileImage.jpg");
 
+            loaderLayout.setVisibility(View.VISIBLE);
 
             if(ProfilePath == null) {
                 Memberinfo info = new Memberinfo(name, phonenumber, address, birthday);
 
-                upLoaderDb(info);
+                storeUploader(info);
             }
             else {
                 try {
@@ -192,7 +199,7 @@ import java.io.InputStream;
 
                                 Memberinfo info = new Memberinfo(name, phonenumber, address, birthday, downloadUri.toString());
 
-                                upLoaderDb(info);
+                                storeUploader(info);
 
 
                             } else {
@@ -213,7 +220,7 @@ import java.io.InputStream;
         }
     }
 
-    private void upLoaderDb(Memberinfo info){
+    private void storeUploader(Memberinfo info){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("users").document(user.getUid())
@@ -222,6 +229,7 @@ import java.io.InputStream;
                     @Override
                     public void onSuccess(Void aVoid) {
                         StartToast("회원정보가 등록 되었습니다.");
+                        loaderLayout.setVisibility(View.GONE);
                         myStartActivity(MainActivity.class);
                     }
 
@@ -230,6 +238,7 @@ import java.io.InputStream;
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         StartToast("회원정보의 등록을 실패하였습니다 .");
+                        loaderLayout.setVisibility(View.GONE);
                         Log.e("error", e + "");
                     }
                 });

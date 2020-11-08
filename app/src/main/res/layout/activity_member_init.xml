@@ -3,9 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:elevation="10dp"
-    android:padding="10dp">
+    android:layout_height="wrap_content">
 
 
     <LinearLayout
@@ -96,14 +94,14 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/vidioModify"
+                android:id="@+id/galleryButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="갤러리" />
 
             <Button
-                android:id="@+id/deletePost"
+                android:id="@+id/pictureBuutton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
@@ -111,6 +109,12 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
+
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 
 </RelativeLayout>

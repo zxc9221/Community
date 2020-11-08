@@ -3,14 +3,14 @@ package com.seongnamc.sns_project;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Writeinfo {
+public class Postinfo {
     private String title;
     private ArrayList<String> contents;
     private String publisher;
     private Date createdAt;
     private String imageUrl;
 
-    public  Writeinfo(String title, ArrayList<String> contents, String publisher, Date createdAt) {
+    public Postinfo(String title, ArrayList<String> contents, String publisher, Date createdAt) {
         this.title = title;
         this.contents = contents;
         this.publisher = publisher;
