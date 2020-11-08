@@ -102,24 +102,8 @@ import java.io.InputStream;
                     }
                     break;
                 case R.id.galleryButton:
-                    if (ContextCompat.checkSelfPermission(
-                            MemberActivity.this , Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                        // You can use the API that requires the permission.
-                        ActivityCompat.requestPermissions(MemberActivity.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                1);
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(MemberActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-                        }else{
-                            StartToast("권한을 허용해주세요.");
-                        }
-                    }
-                    else{
-                        PostActivity(GalleryActivity.class,"image");
-                        cardView.setVisibility(View.GONE);
-
-                    }
+                    PostActivity(GalleryActivity.class,"image");
+                    cardView.setVisibility(View.GONE);
                     break;
                 case R.id.pictureBuutton:
                     myStartActivity(CameraActivity.class);
@@ -129,25 +113,6 @@ import java.io.InputStream;
             }
         }
     };
-
-
-
-     @Override
-     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                            @NonNull int[] grantResults) {
-         switch (requestCode) {
-             case 1:
-                 // If request is cancelled, the result arrays are empty.
-                 if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                     myStartActivity(GalleryActivity.class);
-                     // Permission is granted. Continue the action or workflow
-                     // in your app.
-                 }  else {
-                     StartToast("권한을 허용해주셔야 이용이 가능합니다.");
-                 }
-                 return;
-         }
-     }
 
 
 
@@ -195,7 +160,6 @@ import java.io.InputStream;
 
                                 Log.e("성공", "성공 : " + downloadUri);
                                 // Access a Cloud Firestore instance from your Activity
-                                FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                                 Memberinfo info = new Memberinfo(name, phonenumber, address, birthday, downloadUri.toString());
 

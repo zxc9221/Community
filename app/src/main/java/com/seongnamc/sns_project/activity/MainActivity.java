@@ -16,9 +16,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.seongnamc.sns_project.Postinfo;
@@ -31,15 +34,18 @@ import java.util.Date;
 
 public class MainActivity extends BasicActivity {
     private static final String TAG = "MainActivity";
-    private FirebaseFirestore db;
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseFirestore firebaseFirestore;
+    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private RecyclerView recyclerView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (user == null) {
+
+
+        if (firebaseUser == null) {
             myStartActivity(LoginActivity.class);
         } else {
             get_profile();
@@ -74,38 +80,9 @@ public class MainActivity extends BasicActivity {
             }
         });*/
 
-
-
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            ArrayList<Postinfo> postList = new ArrayList<>();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                postList.add(new Postinfo(document.getData().get("title").toString()
-                                        , (ArrayList<String>) (document.getData().get("contents"))
-                                        , document.getData().get("publisher").toString()
-                                        , new Date(document.getDate("createdAt").getTime())));
-                            }
-                            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycleView);
-                            recyclerView.setHasFixedSize(true);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                            // use a linear layout manager
-
-                            RecyclerView.Adapter mAdapter = new PostAdapter(MainActivity.this, postList);
-                            recyclerView.setAdapter(mAdapter);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
-
-
-
+        recyclerView = (RecyclerView) findViewById(R.id.recycleView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
     }
 
@@ -126,15 +103,54 @@ public class MainActivity extends BasicActivity {
 
     };
 
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        if (firebaseUser != null) {
+            CollectionReference collectionReference = firebaseFirestore.collection("posts");
+
+
+            collectionReference.orderBy("createdAt", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                ArrayList<Postinfo> postList = new ArrayList<>();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    postList.add(new Postinfo(
+                                              document.getData().get("title").toString()
+                                            , (ArrayList<String>) (document.getData().get("contents"))
+                                            , document.getData().get("publisher").toString()
+                                            , new Date(document.getDate("createdAt").getTime())
+                                            , document.getId()));
+                                }
+                                // use a linear layout manager
+
+                                RecyclerView.Adapter mAdapter = new PostAdapter(MainActivity.this, postList);
+                                recyclerView.setAdapter(mAdapter);
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+
+        }
+
+    }
+
     private void logout() {
         FirebaseAuth.getInstance().signOut();
         myStartActivity(LoginActivity.class);
     }
 
     private void get_profile() {
-        db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(user.getUid());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = firebaseFirestore.collection("users").document(firebaseUser.getUid());
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
