@@ -32,6 +32,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.seongnamc.sns_project.Memberinfo;
 import com.seongnamc.sns_project.R;
+import com.seongnamc.sns_project.Utility;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,8 +45,10 @@ import java.io.InputStream;
     private ImageView profileView;
     private String ProfilePath;
     private RelativeLayout loaderLayout;
-    final FirebaseUser  user = FirebaseAuth.getInstance().getCurrentUser();
     private CardView cardView;
+    private Utility utility = new Utility(this);
+    final FirebaseUser  user = FirebaseAuth.getInstance().getCurrentUser();
+
 
 
      @Override
@@ -180,7 +183,7 @@ import java.io.InputStream;
 
         }
         else{
-            StartToast("정보를 입력해주세요.");
+            utility.showToast("정보를 입력해주세요.");
         }
     }
 
@@ -192,7 +195,7 @@ import java.io.InputStream;
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        StartToast("회원정보가 등록 되었습니다.");
+                        utility.showToast("회원정보가 등록 되었습니다.");
                         loaderLayout.setVisibility(View.GONE);
                         myStartActivity(MainActivity.class);
                     }
@@ -201,7 +204,7 @@ import java.io.InputStream;
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        StartToast("회원정보의 등록을 실패하였습니다 .");
+                        utility.showToast("회원정보의 등록을 실패하였습니다 .");
                         loaderLayout.setVisibility(View.GONE);
                         Log.e("error", e + "");
                     }
@@ -209,9 +212,6 @@ import java.io.InputStream;
 
     }
 
-    private void StartToast(String text){
-        Toast.makeText(this, text , Toast.LENGTH_SHORT).show();
-    }
     private void myStartActivity(Class c) {
         Intent intent = new Intent(this, c);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

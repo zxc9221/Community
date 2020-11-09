@@ -14,10 +14,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.seongnamc.sns_project.R;
+import com.seongnamc.sns_project.Utility;
 
 public class PasswordResetActivity extends BasicActivity {
     private static final String TAG = "PasswordResetActivity";
     private FirebaseAuth mAuth;
+    private Utility utility = new Utility(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,22 +56,19 @@ public class PasswordResetActivity extends BasicActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             loaderLayout.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
-                                StartToast("이메일을 보냈습니다.");
+                                utility.showToast("이메일을 보냈습니다.");
                             }
                             else{
-                                StartToast(task.getException().toString());
+                                utility.showToast(task.getException().toString());
                             }
                         }
                     });
         }
         else{
-            StartToast("이메일을 입력해주세요.");
+            utility.showToast("이메일을 입력해주세요.");
         }
     }
 
-    private void StartToast(String text){
-        Toast.makeText(this, text , Toast.LENGTH_SHORT).show();
-    }
 
     private void myStartActivity(Class c) {
         Intent intent = new Intent(this, c);

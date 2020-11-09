@@ -1,10 +1,10 @@
 package com.seongnamc.sns_project.activity;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.seongnamc.sns_project.R;
-import com.seongnamc.sns_project.adaptor.GalleryAdapter;
+import com.seongnamc.sns_project.Utility;
+import com.seongnamc.sns_project.adapter.GalleryAdapter;
 
 import android.Manifest;
 import android.app.Activity;
@@ -17,8 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 
@@ -31,7 +29,7 @@ import java.util.ArrayList;
 
 
 public class GalleryActivity extends BasicActivity {
-
+    Utility utility = new Utility(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +46,7 @@ public class GalleryActivity extends BasicActivity {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
             }else{
-                StartToast("권한을 허용해주세요.");
+                utility.showToast("권한을 허용해주세요.");
             }
         }
         else{
@@ -70,7 +68,7 @@ public class GalleryActivity extends BasicActivity {
                 if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     recycleInit();
                 }  else {
-                    StartToast("권한을 허용해주셔야 이용이 가능합니다.");
+                    utility.showToast("권한을 허용해주셔야 이용이 가능합니다.");
                     finish();
 
                 }
@@ -119,7 +117,4 @@ public class GalleryActivity extends BasicActivity {
         return listOfAllImages;
     }
 
-    private void StartToast(String text){
-        Toast.makeText(this, text , Toast.LENGTH_SHORT).show();
-    }
 }

@@ -17,25 +17,36 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.seongnamc.sns_project.R;
 import com.seongnamc.sns_project.Postinfo;
+import com.seongnamc.sns_project.Utility;
+import com.seongnamc.sns_project.adapter.PostAdapter;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class WritePostActivity extends BasicActivity {
     private static final String TAG = "WtitePostActivity";
@@ -45,6 +56,7 @@ public class WritePostActivity extends BasicActivity {
     private RelativeLayout buttonsBackgroundLayout;
     private ImageView selectedImageView;
     private EditText selectedEditText;
+    private Utility utility = new Utility(this);
     int successCount = 0;
 
     private RelativeLayout loaderLayout;
@@ -177,16 +189,42 @@ public class WritePostActivity extends BasicActivity {
         }
     }
 
-    private void storageUploader() {
+    private void storageUploader(){
         final String title = ((EditText) findViewById(R.id.titleeditText)).getText().toString();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Create a storage reference from our app
-        StorageReference storageRef = storage.getReference();
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        final DocumentReference documentReference = firestore.collection("posts").document();
-
+        String date;
+        Date mem_date = null;
         if (title.length() > 0) {
             // Create a storage reference from our app
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            // Create a storage reference from our app
+            StorageReference storageRef = storage.getReference();
+            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+            String id = getIntent().getStringExtra("id");
+            date = getIntent().getStringExtra("Date");
+            DocumentReference dc;
+            if (id == null) {
+                dc = firestore.collection("posts").document();
+                Log.d("new", "새 게시글");
+            } else {
+
+                dc = firestore.collection("posts").document(id);
+                Log.d("modify", "수정글");
+
+
+                Log.d(TAG + "시간", date + "");
+
+                try {
+                    mem_date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Log.d("시간", mem_date + "");
+
+
+            }
+
+            final DocumentReference documentReference = dc;
             ArrayList<String> contentsList = new ArrayList<>();
             int pathCount = 0;
 
@@ -194,7 +232,7 @@ public class WritePostActivity extends BasicActivity {
 
             for (int i = 0; i < parent.getChildCount(); i++) {
                 LinearLayout linearLayout = (LinearLayout) parent.getChildAt((i));
-                for(int j = 0; j < linearLayout.getChildCount(); j++){
+                for (int j = 0; j < linearLayout.getChildCount(); j++) {
                     View view = linearLayout.getChildAt(j);
                     if (view instanceof EditText) {
                         String text = ((EditText) view).getText().toString();
@@ -204,13 +242,14 @@ public class WritePostActivity extends BasicActivity {
 
                     } else {
                         contentsList.add(pathList.get(pathCount));
-                        String extension = pathList.get(pathCount).substring(pathList.get(pathCount).lastIndexOf('.')+1);
-                        final StorageReference mountainImagesRef = storageRef.child("posts/" + documentReference.getId() + "/" + pathCount + "."+extension);
+                        String extension = pathList.get(pathCount).substring(pathList.get(pathCount).lastIndexOf('.') + 1);
+                        final StorageReference mountainImagesRef = storageRef.child("posts/" + documentReference.getId() + "/" + pathCount + "." + extension);
                         try {
                             InputStream stream = new FileInputStream(new File(pathList.get(pathCount)));
-                            StorageMetadata metadata = new StorageMetadata.Builder().setCustomMetadata("index",""+(contentsList.size()-1)).build();
-                            UploadTask uploadTask = mountainImagesRef.putStream(stream,metadata);
+                            StorageMetadata metadata = new StorageMetadata.Builder().setCustomMetadata("index", "" + (contentsList.size() - 1)).build();
+                            UploadTask uploadTask = mountainImagesRef.putStream(stream, metadata);
 
+                            Date finalMem_date = mem_date;
                             uploadTask.addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
@@ -225,9 +264,14 @@ public class WritePostActivity extends BasicActivity {
                                         public void onSuccess(Uri uri) {
                                             contentsList.set(index, uri.toString());
                                             successCount++;
-                                            Log.d("dddddd","in");
-                                            if(pathList.size() == successCount){
-                                                Postinfo info = new Postinfo(title, contentsList, user.getUid(), new Date());
+                                            if (pathList.size() == successCount) {
+                                                Postinfo info;
+                                                if(date == null) {
+                                                    info = new Postinfo(title, contentsList, user.getUid(), new Date());
+                                                }
+                                                else{
+                                                    info = new Postinfo(title, contentsList, user.getUid(), finalMem_date);
+                                                }
                                                 storeUploader(documentReference, info);
                                             }
                                         }
@@ -246,13 +290,20 @@ public class WritePostActivity extends BasicActivity {
 
                 }
 
+
             }
-            if(pathList.size() == 0){
-                Postinfo info = new Postinfo(title, contentsList, user.getUid(), new Date());
+            if (pathList.size() == 0) {
+                Postinfo info;
+                if(date == null) {
+                    info = new Postinfo(title, contentsList, user.getUid(), new Date());
+                }
+                else{
+                    info = new Postinfo(title, contentsList, user.getUid(), mem_date);
+                }
                 storeUploader(documentReference, info);
             }
         } else {
-            StartToast("제목을 입력해주세요.");
+            utility.showToast("제목을 입력해주세요.");
         }
     }
 
@@ -286,9 +337,6 @@ public class WritePostActivity extends BasicActivity {
         }
     };
 
-    private void StartToast(String text){
-        Toast.makeText(this, text , Toast.LENGTH_SHORT).show();
-    }
 
     private void myStartActivity(Class c) {
         Intent intent = new Intent(this, c);

@@ -17,10 +17,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.seongnamc.sns_project.R;
+import com.seongnamc.sns_project.Utility;
 
 public class LoginActivity extends BasicActivity {
     private static final String TAG = "LoginActivity";
     private FirebaseAuth mAuth;
+    private Utility utility = new Utility(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,14 +88,14 @@ public class LoginActivity extends BasicActivity {
                             loaderLayout.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
-                                StartToast("로그인 성공 ");
+                                utility.showToast("로그인 성공 ");
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 updateUI(user);
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
                                 //Toast.makeText(EmailPasswordActivity.this, "Authentication failed." Toast.LENGTH_SHORT).show();
-                                StartToast(task.getException().toString());
+                                utility.showToast(task.getException().toString());
                                 updateUI(null);
                             }
 
@@ -101,13 +103,10 @@ public class LoginActivity extends BasicActivity {
                     });
         }
         else{
-            StartToast("이메일과 비밀번호를 입력해주세요.");
+            utility.showToast("이메일과 비밀번호를 입력해주세요.");
         }
     }
 
-    private void StartToast(String text){
-        Toast.makeText(this, text , Toast.LENGTH_SHORT).show();
-    }
     private void myStartActivity(Class c) {
         Intent intent = new Intent(this, c);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
