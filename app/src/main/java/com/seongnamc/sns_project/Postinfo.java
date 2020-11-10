@@ -1,9 +1,10 @@
 package com.seongnamc.sns_project;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Postinfo {
+public class Postinfo implements Serializable {
     private String title;
     private ArrayList<String> contents;
     private String publisher;

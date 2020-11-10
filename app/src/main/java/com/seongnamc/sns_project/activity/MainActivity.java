@@ -6,11 +6,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,6 +30,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.seongnamc.sns_project.Postinfo;
 import com.seongnamc.sns_project.R;
 import com.seongnamc.sns_project.Utility;
@@ -41,8 +48,11 @@ public class MainActivity extends BasicActivity {
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private PostAdapter postAdapter;
     private ArrayList<Postinfo> postList;
-    private Utility utility = new Utility(this);;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
+    private Utility utility = new Utility(this);
+    private int successCnt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,11 @@ public class MainActivity extends BasicActivity {
         } else {
             get_profile();
         }
+
+
+        // Create a storage reference from our app
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
 
         postList = new ArrayList<>();
@@ -193,8 +208,60 @@ public class MainActivity extends BasicActivity {
 
     OnPostListener onPostListener = new OnPostListener() {
         @Override
-        public void onDelete(String id) {
+        public void onDelete(int position) {
+            final String id = postList.get(position).getID();
             Log.e("Delete","삭제/"+id);
+
+            ArrayList<String> contentsList = postList.get(position).getContents();
+            successCnt = 0;
+            for (int i = 0; i < contentsList.size(); i++) {
+                String contents = contentsList.get(i);
+                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/")) {
+                    successCnt++;
+                    String[] list1 = contents.split("\\?");
+                    String[] list2 =  list1[0].split("%2F");
+                    String name = list2[list2.length - 1];
+
+                    // Create a reference to the file to delete
+                    StorageReference desertRef = storageRef.child("posts/"+id+"/"+name);
+
+                    // Delete the file
+                    desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // File deleted successfully
+                            //utility.showToast("이미지를 삭제하였습니다.");
+                            successCnt--;
+
+                            delate_store(id);
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Uh-oh, an error occurred!
+                            utility.showToast("이미지를 삭제하지 못하였습니다.");
+                        }
+                    });
+                }
+            }
+
+            delate_store(id);
+
+        }
+
+
+        @Override
+        public void onModify(int position) {
+            String id = postList.get(position).getID();
+            Log.e("Modify","수정/"+id);
+            myStartActivity(WritePostActivity.class, postList.get(position));
+
+        }
+    };
+
+    private void delate_store(String id){
+        if(successCnt == 0) {
             firebaseFirestore.collection("posts").document(id)
                     .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -213,14 +280,7 @@ public class MainActivity extends BasicActivity {
                         }
                     });
         }
-
-        @Override
-        public void onModify(String id , Date date) {
-            Log.e("Modify","수정/"+id);
-            myStartActivity(WritePostActivity.class, id, date);
-
-        }
-    };
+    }
 
     private void myStartActivity(Class c) {
         Intent intent = new Intent(this, c);
@@ -228,16 +288,10 @@ public class MainActivity extends BasicActivity {
         startActivityForResult(intent, 0);
     }
 
-    private void myStartActivity(Class c, String id, Date date) {
+    private void myStartActivity(Class c, Postinfo postinfo) {
         Intent intent = new Intent(this, c);
-        intent.putExtra("id",id);
+        intent.putExtra("postinfo",postinfo);
 
-        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String to = transFormat.format(date);
-
-        intent.putExtra("Date",to);
-        Log.d("시간",date+"");
-        Log.d("시간",to+"");
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 0);
     }

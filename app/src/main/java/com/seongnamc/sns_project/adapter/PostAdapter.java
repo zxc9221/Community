@@ -2,6 +2,7 @@ package com.seongnamc.sns_project.adapter;
 
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -50,7 +51,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public PostAdapter(Activity activity, ArrayList<Postinfo> myDataset) {
-        mDataset = myDataset;
+        this.mDataset = myDataset;
         this.activity = activity;
     }
 
@@ -100,31 +101,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if(contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contentsList)) {
             contentsLayout.setTag(contentsList);
             contentsLayout.removeAllViews();
+            final int MORE_INDEX = 2;
 
-            if(contentsList.size() > 0){
-
-                for (int i = 0; i < contentsList.size(); i++) {
-                    String contents = contentsList.get(i);
-                    if (Patterns.WEB_URL.matcher(contents).matches()) {
-                        //if()
-                        ImageView imageView = new ImageView(activity);
-                        imageView.setLayoutParams(layoutParams);
-                        imageView.setAdjustViewBounds(true);
-                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                        contentsLayout.addView(imageView);
-                        Glide.with(activity).load(contents).centerCrop().override(1000).thumbnail(0.1f).into(imageView);
-                    } else {
-                        TextView textView = new TextView(activity);
-                        textView.setLayoutParams(layoutParams);
-                        contentsLayout.addView(textView);
-                        textView.setText(contents);
-                    }
+            for (int i = 0; i < contentsList.size(); i++) {
+                if (i == MORE_INDEX) {
+                    TextView textView = new TextView(activity);
+                    textView.setLayoutParams(layoutParams);
+                    textView.setText("더보기. ");
+                    contentsLayout.addView(textView);
+                    break;
                 }
-
+                String contents = contentsList.get(i);
+                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/")) {
+                    //if()
+                    ImageView imageView = new ImageView(activity);
+                    imageView.setLayoutParams(layoutParams);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    contentsLayout.addView(imageView);
+                    Glide.with(activity).load(contents).centerCrop().override(1000).thumbnail(0.1f).into(imageView);
+                } else {
+                    TextView textView = new TextView(activity);
+                    textView.setLayoutParams(layoutParams);
+                    textView.setText(contents);
+                    textView.setTextColor(Color.rgb(0, 0, 0));
+                    contentsLayout.addView(textView);
+                }
             }
         }
-
-
     }
 
 
@@ -137,8 +141,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private void showPopup(View v, int position) {
         PopupMenu popup = new PopupMenu(activity, v);
-        String id = mDataset.get(position).getID();
-
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -146,10 +148,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 switch (item.getItemId()) {
                     case R.id.modifyPost:
                         Date date = mDataset.get(position).getCreatedAt();
-                        onPostListener.onModify(id, date);
+                        onPostListener.onModify(position);
                         return true;
                     case R.id.deletePost:
-                        onPostListener.onDelete(id);
+                        onPostListener.onDelete(position);
 
                         return true;
                     default:
