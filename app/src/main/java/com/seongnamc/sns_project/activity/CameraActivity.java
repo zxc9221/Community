@@ -33,6 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static com.seongnamc.sns_project.Utility.INTENT_PATH;
+
 public class CameraActivity extends BasicActivity {
 
     /**
@@ -46,7 +48,6 @@ public class CameraActivity extends BasicActivity {
         @Override
         public void onImageAvailable(ImageReader reader) {
 
-            Log.e("로그","캡처");
             Image mImage = reader.acquireNextImage();
             File mFile = new File(getExternalFilesDir(null), "profileImage.jpg");
 
@@ -69,9 +70,9 @@ public class CameraActivity extends BasicActivity {
                     }
                 }
             }
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("ProfilePath",mFile.toString());
-            setResult(Activity.RESULT_OK, resultIntent);
+            Intent intent = new Intent();
+            intent.putExtra(INTENT_PATH ,mFile.toString());
+            setResult(Activity.RESULT_OK, intent);
             finish();
         }
     };
@@ -81,6 +82,7 @@ public class CameraActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        setToolbarTitle(getResources().getString(R.string.app_name));
         if (null == savedInstanceState) {
             Camera2BasicFragment camera2BasicFragment = new Camera2BasicFragment();
             camera2BasicFragment.setOnImageAvailableListener(mOnImageAvailableListener);

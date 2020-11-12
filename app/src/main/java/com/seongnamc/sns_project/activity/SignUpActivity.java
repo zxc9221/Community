@@ -18,14 +18,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.seongnamc.sns_project.R;
 import com.seongnamc.sns_project.Utility;
 
+import static com.seongnamc.sns_project.Utility.showToast;
+
 public class SignUpActivity extends BasicActivity {
     private static final String TAG = "SignUpActivity";
     private FirebaseAuth mAuth;
-    private Utility utility = new Utility(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        setToolbarTitle("회원 가입");
+
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -87,13 +90,13 @@ public class SignUpActivity extends BasicActivity {
                                     // Sign in success, update UI with the signed-in user's information
 
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    utility.showToast("회원가입을 성공하였습니다.");
+                                    showToast(SignUpActivity.this,"회원가입을 성공하였습니다.");
                                     updateUI(user);
                                     myStartActivity(MainActivity.class);
                                 } else {
                                     if(task.getException() != null) {
                                         // If sign in fails, display a message to the user.
-                                        utility.showToast(task.getException().toString());
+                                        showToast(SignUpActivity.this, task.getException().toString());
                                         //updateUI(null);
                                     }
                                 }
@@ -103,11 +106,11 @@ public class SignUpActivity extends BasicActivity {
                         });
             }
             else{
-                utility.showToast("비밀번호가 일치하지 않습니다.");
+                showToast(SignUpActivity.this, "비밀번호가 일치하지 않습니다.");
             }
         }
         else{
-            utility.showToast("이메일과 비밀번호를 입력해주세요.");
+            showToast(SignUpActivity.this, "이메일과 비밀번호를 입력해주세요.");
         }
     }
 

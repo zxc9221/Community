@@ -16,14 +16,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.seongnamc.sns_project.R;
 import com.seongnamc.sns_project.Utility;
 
+import static com.seongnamc.sns_project.Utility.showToast;
+
 public class PasswordResetActivity extends BasicActivity {
     private static final String TAG = "PasswordResetActivity";
     private FirebaseAuth mAuth;
-    private Utility utility = new Utility(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_reset);
+        setToolbarTitle("비밀번호 재설정");
 
         mAuth = FirebaseAuth.getInstance();
         findViewById(R.id.emailSendButton).setOnClickListener(onClickListner);
@@ -56,16 +58,16 @@ public class PasswordResetActivity extends BasicActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             loaderLayout.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
-                                utility.showToast("이메일을 보냈습니다.");
+                                showToast(PasswordResetActivity.this, "이메일을 보냈습니다.");
                             }
                             else{
-                                utility.showToast(task.getException().toString());
+                                showToast(PasswordResetActivity.this, task.getException().toString());
                             }
                         }
                     });
         }
         else{
-            utility.showToast("이메일을 입력해주세요.");
+            showToast(PasswordResetActivity.this, "이메일을 입력해주세요.");
         }
     }
 

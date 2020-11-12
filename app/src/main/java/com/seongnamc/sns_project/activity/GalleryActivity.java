@@ -27,15 +27,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import static com.seongnamc.sns_project.Utility.GALLERY_IMAGE;
+import static com.seongnamc.sns_project.Utility.GALLERY_VIDIO;
+import static com.seongnamc.sns_project.Utility.INTENT_MEDIA;
+import static com.seongnamc.sns_project.Utility.showToast;
+
 
 public class GalleryActivity extends BasicActivity {
-    Utility utility = new Utility(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-
+        setToolbarTitle("갤러리");
         if (ContextCompat.checkSelfPermission(
                 this , Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -46,7 +50,7 @@ public class GalleryActivity extends BasicActivity {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
             }else{
-                utility.showToast("권한을 허용해주세요.");
+                showToast(GalleryActivity.this , getResources().getString(R.string.please_grant_permission));
             }
         }
         else{
@@ -68,7 +72,7 @@ public class GalleryActivity extends BasicActivity {
                 if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     recycleInit();
                 }  else {
-                    utility.showToast("권한을 허용해주셔야 이용이 가능합니다.");
+                    showToast(GalleryActivity.this , getResources().getString(R.string.please_grant_permission));
                     finish();
 
                 }
@@ -95,7 +99,9 @@ public class GalleryActivity extends BasicActivity {
         Intent intent = getIntent();
         String[] projection;
 
-        if(intent.getStringExtra("media").equals("vidio")) {
+        final int media = intent.getIntExtra(INTENT_MEDIA, GALLERY_IMAGE);
+
+        if(media == GALLERY_VIDIO) {
             uri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
             projection = new String[] { MediaStore.MediaColumns.DATA, MediaStore.Video.Media.BUCKET_DISPLAY_NAME };
         }

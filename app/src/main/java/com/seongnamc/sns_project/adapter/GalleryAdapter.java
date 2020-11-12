@@ -16,6 +16,8 @@ import com.seongnamc.sns_project.R;
 
 import java.util.ArrayList;
 
+import static com.seongnamc.sns_project.Utility.INTENT_PATH;
+
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
     private ArrayList<String> mDataset;
     private Activity activity;
@@ -45,7 +47,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
             @Override
             public void onClick(View v) {
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("ProfilePath",mDataset.get(galleryViewHolder.getAdapterPosition()));
+                resultIntent.putExtra(INTENT_PATH ,mDataset.get(galleryViewHolder.getAdapterPosition()));
                 activity.setResult(Activity.RESULT_OK, resultIntent);
                 activity.finish();
             }
@@ -58,11 +60,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     @Override
     public void onBindViewHolder(final GalleryViewHolder holder, int position) {
         CardView cardView = holder.cardView;
-
-        /*Bitmap bmp = BitmapFactory.decodeFile(mDataset.get(position));
-        Log.d("path",mDataset.get(position));
-        imageView.setImageBitmap(bmp);*/
-
 
         ImageView imageView = cardView.findViewById(R.id.galleryView);
         Glide.with(activity).load(mDataset.get(position)).centerCrop().override(300).into(imageView);

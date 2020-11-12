@@ -41,7 +41,7 @@
         </activity>
         <activity android:name=".activity.PasswordResetActivity">
         </activity>
-        <activity android:name=".activity.MemberActivity">
+        <activity android:name=".activity.UserActivity">
         </activity>
 
         <activity android:name=".activity.CameraActivity">
@@ -51,6 +51,8 @@
         <activity android:name=".activity.BasicActivity">
         </activity>
         <activity android:name=".activity.WritePostActivity">
+        </activity>
+        <activity android:name=".activity.PostActivity">
         </activity>
 
     </application>

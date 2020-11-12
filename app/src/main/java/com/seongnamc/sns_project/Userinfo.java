@@ -2,7 +2,7 @@ package com.seongnamc.sns_project;
 
 import android.widget.EditText;
 
-public class Memberinfo {
+public class Userinfo {
 
     private String name;
     private String phonenumber;
@@ -10,7 +10,7 @@ public class Memberinfo {
     private String birthday;
     private String photoUrl;
 
-    public  Memberinfo(String name, String phonenumber, String address, String birthday, String photoUrl) {
+    public Userinfo(String name, String phonenumber, String address, String birthday, String photoUrl) {
         this.name = name;
         this.phonenumber = phonenumber;
         this.address = address;
@@ -18,7 +18,7 @@ public class Memberinfo {
         this.photoUrl = photoUrl;
     }
 
-    public  Memberinfo(String name, String phonenumber, String address, String birthday) {
+    public Userinfo(String name, String phonenumber, String address, String birthday) {
         this.name = name;
         this.phonenumber = phonenumber;
         this.address = address;

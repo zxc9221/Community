@@ -2,6 +2,7 @@ package com.seongnamc.sns_project.adapter;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.util.Patterns;
@@ -21,23 +22,33 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.seongnamc.sns_project.FirebaseHelper;
 import com.seongnamc.sns_project.Postinfo;
 import com.seongnamc.sns_project.R;
+import com.seongnamc.sns_project.activity.PostActivity;
+import com.seongnamc.sns_project.activity.WritePostActivity;
 import com.seongnamc.sns_project.listener.OnPostListener;
+import com.seongnamc.sns_project.view.ContentsItemView;
+import com.seongnamc.sns_project.view.ReadContentsView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.seongnamc.sns_project.Utility.INTENT_PATH;
+import static com.seongnamc.sns_project.Utility.isStorageUri;
+
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private String TAG = "PostAdapter";
+    private FirebaseHelper firebaseHelper;
     private ArrayList<Postinfo> mDataset;
+    private ArrayList<ArrayList< SimpleExoPlayer>> playerArrayList2 = new ArrayList<>();
     private Activity activity;
-    private OnPostListener onPostListener;
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
@@ -53,12 +64,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public PostAdapter(Activity activity, ArrayList<Postinfo> myDataset) {
         this.mDataset = myDataset;
         this.activity = activity;
+
+        firebaseHelper = new FirebaseHelper(activity);
+
     }
+
+    public void setOnPostLister(OnPostListener onPostListener){
+        firebaseHelper.setOnPostLisener(onPostListener);
+    }
+
+
 
     @Override
     public int getItemViewType(int position) {
         return position;
     }
+
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -70,6 +91,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(activity, PostActivity.class);
+                intent.putExtra(INTENT_PATH,mDataset.get(PostViewHolder.getAdapterPosition()));
+                //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                activity.startActivity(intent);
 
             }
         });
@@ -89,44 +114,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(final PostViewHolder holder, int position) {
         CardView cardView = holder.cardView;
         TextView titleTextView = cardView.findViewById(R.id.tiltleTextView);
-        titleTextView.setText(mDataset.get(position).getTitle());
 
-        TextView createAtTextView = cardView.findViewById(R.id.createAtTextView);
-        createAtTextView.setText(new SimpleDateFormat("yyyy.MM.dd-HH:mm", Locale.getDefault()).format(mDataset.get(position).getCreatedAt()));
+        Postinfo postinfo = mDataset.get(position);
+        titleTextView.setText(postinfo.getTitle());
 
+        ReadContentsView readContentsView = cardView.findViewById(R.id.readContentsView);
         LinearLayout contentsLayout = cardView.findViewById(R.id.contentsLayout);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        ArrayList<String> contentsList = mDataset.get(position).getContents();
 
-        if(contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contentsList)) {
-            contentsLayout.setTag(contentsList);
+        if(contentsLayout.getTag() == null || !contentsLayout.getTag().equals(postinfo)) {
+            contentsLayout.setTag(postinfo);
             contentsLayout.removeAllViews();
-            final int MORE_INDEX = 2;
 
-            for (int i = 0; i < contentsList.size(); i++) {
-                if (i == MORE_INDEX) {
-                    TextView textView = new TextView(activity);
-                    textView.setLayoutParams(layoutParams);
-                    textView.setText("더보기. ");
-                    contentsLayout.addView(textView);
-                    break;
-                }
-                String contents = contentsList.get(i);
-                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/")) {
-                    //if()
-                    ImageView imageView = new ImageView(activity);
-                    imageView.setLayoutParams(layoutParams);
-                    imageView.setAdjustViewBounds(true);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    contentsLayout.addView(imageView);
-                    Glide.with(activity).load(contents).centerCrop().override(1000).thumbnail(0.1f).into(imageView);
-                } else {
-                    TextView textView = new TextView(activity);
-                    textView.setLayoutParams(layoutParams);
-                    textView.setText(contents);
-                    textView.setTextColor(Color.rgb(0, 0, 0));
-                    contentsLayout.addView(textView);
-                }
+            readContentsView.setMoreIndex(0);
+            readContentsView.setPostInfo(postinfo);
+
+            ArrayList< SimpleExoPlayer > Simple = readContentsView.getPlayerArrayList();
+
+            if(Simple!= null) {
+                playerArrayList2.add(Simple);
             }
         }
     }
@@ -147,11 +152,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.modifyPost:
-                        Date date = mDataset.get(position).getCreatedAt();
-                        onPostListener.onModify(position);
+                        myStartActivity(WritePostActivity.class, mDataset.get(position));
                         return true;
                     case R.id.deletePost:
-                        onPostListener.onDelete(position);
+
+                        firebaseHelper.storageDelete(mDataset.get(position));
 
                         return true;
                     default:
@@ -164,10 +169,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         popup.show();
     }
 
-    public void setOnPostListener(OnPostListener onPostListener){
-        this.onPostListener = onPostListener;
+    public void playerStop() {
+        for (int i = 0; i < playerArrayList2.size(); i++) {
+            ArrayList< SimpleExoPlayer > Simple = playerArrayList2.get(i);
+            for(int j = 0; j<Simple.size(); j++){
+                SimpleExoPlayer simple = Simple.get(j);
+                if(simple.getPlayWhenReady()) {
+                    simple.setPlayWhenReady(false);
+                }
+            }
+        }
     }
 
+    private void myStartActivity(Class c, Postinfo postinfo) {
+        Intent intent = new Intent(activity, c);
+        intent.putExtra(INTENT_PATH ,postinfo);
+
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        activity.startActivity(intent);
+    }
 
 
 }

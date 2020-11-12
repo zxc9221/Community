@@ -1,9 +1,7 @@
  package com.seongnamc.sns_project.activity;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -30,23 +24,24 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.seongnamc.sns_project.Memberinfo;
+import com.seongnamc.sns_project.Userinfo;
 import com.seongnamc.sns_project.R;
-import com.seongnamc.sns_project.Utility;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
- public class MemberActivity extends BasicActivity {
+import static com.seongnamc.sns_project.Utility.INTENT_PATH;
+import static com.seongnamc.sns_project.Utility.showToast;
+
+ public class UserActivity extends BasicActivity {
     private static final String TAG = "MemberActivity";
     private FirebaseAuth mAuth;
     private ImageView profileView;
     private String ProfilePath;
     private RelativeLayout loaderLayout;
-    private CardView cardView;
-    private Utility utility = new Utility(this);
+    private RelativeLayout buttonBackgroundLayout;
     final FirebaseUser  user = FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -54,9 +49,11 @@ import java.io.InputStream;
      @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_member_init);
+        setContentView(R.layout.activity_user_init);
+        setToolbarTitle("회원 정보 등록");
 
-        // Initialize Firebase Auth
+
+         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
         profileView = findViewById(R.id.profileView);
@@ -67,6 +64,8 @@ import java.io.InputStream;
 
         loaderLayout = findViewById(R.id.loaderLayout);
 
+        buttonBackgroundLayout = findViewById(R.id.ButtonsBackgroundLayout);
+        buttonBackgroundLayout.setOnClickListener(onClickListener);
     }
 
     @Override
@@ -96,21 +95,18 @@ import java.io.InputStream;
                     storageUploader();
                     break;
                 case R.id.profileView:
-                    cardView = findViewById(R.id.ButtonView);
-                    if(cardView.getVisibility() == View.VISIBLE){
-                        cardView.setVisibility(View.GONE);
-                    }
-                    else{
-                        cardView.setVisibility(View.VISIBLE);
-                    }
+                    buttonBackgroundLayout.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.ButtonsBackgroundLayout:
+                    buttonBackgroundLayout.setVisibility(View.GONE);
                     break;
                 case R.id.galleryButton:
                     PostActivity(GalleryActivity.class,"image");
-                    cardView.setVisibility(View.GONE);
+                    buttonBackgroundLayout.setVisibility(View.GONE);
                     break;
                 case R.id.pictureBuutton:
                     myStartActivity(CameraActivity.class);
-                    cardView.setVisibility(View.GONE);
+                    buttonBackgroundLayout.setVisibility(View.GONE);
                     break;
 
             }
@@ -134,7 +130,7 @@ import java.io.InputStream;
             loaderLayout.setVisibility(View.VISIBLE);
 
             if(ProfilePath == null) {
-                Memberinfo info = new Memberinfo(name, phonenumber, address, birthday);
+                Userinfo info = new Userinfo(name, phonenumber, address, birthday);
 
                 storeUploader(info);
             }
@@ -164,7 +160,7 @@ import java.io.InputStream;
                                 Log.e("성공", "성공 : " + downloadUri);
                                 // Access a Cloud Firestore instance from your Activity
 
-                                Memberinfo info = new Memberinfo(name, phonenumber, address, birthday, downloadUri.toString());
+                                Userinfo info = new Userinfo(name, phonenumber, address, birthday, downloadUri.toString());
 
                                 storeUploader(info);
 
@@ -183,11 +179,11 @@ import java.io.InputStream;
 
         }
         else{
-            utility.showToast("정보를 입력해주세요.");
+            showToast(UserActivity.this , "정보를 입력해주세요.");
         }
     }
 
-    private void storeUploader(Memberinfo info){
+    private void storeUploader(Userinfo info){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("users").document(user.getUid())
@@ -195,7 +191,7 @@ import java.io.InputStream;
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        utility.showToast("회원정보가 등록 되었습니다.");
+                        showToast(UserActivity.this , "회원정보가 등록 되었습니다.");
                         loaderLayout.setVisibility(View.GONE);
                         myStartActivity(MainActivity.class);
                     }
@@ -204,7 +200,7 @@ import java.io.InputStream;
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        utility.showToast("회원정보의 등록을 실패하였습니다 .");
+                        showToast(UserActivity.this , "회원정보의 등록을 실패하였습니다 .");
                         loaderLayout.setVisibility(View.GONE);
                         Log.e("error", e + "");
                     }
@@ -230,11 +226,12 @@ import java.io.InputStream;
         switch (requestCode){
             case 0:
                 if(resultCode == Activity.RESULT_OK){
-                    ProfilePath = data.getStringExtra("ProfilePath");
+                    ProfilePath = data.getStringExtra(INTENT_PATH );
                     /*Log.e("path",ProfilePath+"");
                     Bitmap bmp = BitmapFactory.decodeFile(ProfilePath);
                     profileView.setImageBitmap(bmp);*/
                     Glide.with(this).load(ProfilePath).centerCrop().override(300).into(profileView);
+                    buttonBackgroundLayout.setVisibility(View.GONE);
                 }
                 break;
         }

@@ -19,14 +19,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.seongnamc.sns_project.R;
 import com.seongnamc.sns_project.Utility;
 
+import static com.seongnamc.sns_project.Utility.showToast;
+
 public class LoginActivity extends BasicActivity {
     private static final String TAG = "LoginActivity";
     private FirebaseAuth mAuth;
-    private Utility utility = new Utility(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        setToolbarTitle("로그인");
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -88,14 +90,14 @@ public class LoginActivity extends BasicActivity {
                             loaderLayout.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
-                                utility.showToast("로그인 성공 ");
+                                showToast(LoginActivity.this , "로그인 성공 ");
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 updateUI(user);
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
                                 //Toast.makeText(EmailPasswordActivity.this, "Authentication failed." Toast.LENGTH_SHORT).show();
-                                utility.showToast(task.getException().toString());
+                                showToast(LoginActivity.this , task.getException().toString());
                                 updateUI(null);
                             }
 
@@ -103,7 +105,7 @@ public class LoginActivity extends BasicActivity {
                     });
         }
         else{
-            utility.showToast("이메일과 비밀번호를 입력해주세요.");
+            showToast(LoginActivity.this , "이메일과 비밀번호를 입력해주세요.");
         }
     }
 
