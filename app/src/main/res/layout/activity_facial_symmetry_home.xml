@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -65,7 +66,20 @@
             android:gravity="center"
             android:text="Ads"
             android:textSize="50sp" />
+
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
+
+        <include
+            layout="@layout/view_loader_facial_symmetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:visibility="gone"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/ButtonsBackgroundLayout"
@@ -73,7 +87,8 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="#CC5E5D5D"
-        android:visibility="gone">?
+        android:visibility="gone"
+        >
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -103,4 +118,5 @@
 
         </androidx.cardview.widget.CardView>
     </RelativeLayout>
+
 </RelativeLayout>
