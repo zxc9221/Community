@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.seongnamc.sns_project.R;
 import com.seongnamc.sns_project.activity.LoginActivity;
+import com.seongnamc.sns_project.activity.StartActivity;
 import com.seongnamc.sns_project.activity.UserActivity;
 import com.seongnamc.sns_project.activity.WritePostActivity;
 
@@ -98,7 +99,12 @@ public class UserInfoFragment extends Fragment {
 
     private void logout() {
         FirebaseAuth.getInstance().signOut();
-        myStartActivity(LoginActivity.class);
+        StartActivity(StartActivity.class);
+    }
+    private void StartActivity(Class c) {
+        Intent intent = new Intent(getActivity(), c);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private void myStartActivity(Class c) {

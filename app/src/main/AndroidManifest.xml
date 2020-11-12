@@ -54,6 +54,13 @@
         </activity>
         <activity android:name=".activity.PostActivity">
         </activity>
+        <activity android:name=".activity.StartActivity">
+        </activity>
+        <activity android:name=".activity.FacialSymmetryHomeActivity">
+        </activity>
+        <activity android:name=".activity.FacialSymmetryResultActivity">
+        </activity>
+
 
     </application>
 

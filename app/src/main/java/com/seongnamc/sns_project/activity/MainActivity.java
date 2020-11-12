@@ -97,7 +97,8 @@ public class MainActivity extends BasicActivity {
 
     private void init_profile(FirebaseUser firebaseUser) {
         if (firebaseUser == null) {
-            myStartActivity(LoginActivity.class);
+            Log.e("확인","확인");
+            StartActivity(StartActivity.class);
         } else {
 
             DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.getUid());
@@ -109,7 +110,10 @@ public class MainActivity extends BasicActivity {
                         if (document != null) {
                             if (document.exists()) {
                                 Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-
+                                HomeFragment homeFragment = new HomeFragment();
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.container, homeFragment)
+                                        .commit();
 
                             } else {
                                 Log.d(TAG, "No such document");
@@ -131,6 +135,11 @@ public class MainActivity extends BasicActivity {
         Intent intent = new Intent(this, c);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivityForResult(intent, 1);
+    }
+    private void StartActivity(Class c) {
+        Intent intent = new Intent(this, c);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 

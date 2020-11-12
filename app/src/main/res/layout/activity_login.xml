@@ -58,24 +58,12 @@
                 android:layout_height="wrap_content"
                 android:text="로그인" />
 
-            <FrameLayout
+            <Button
+                android:id="@+id/passwordButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/passwordButton"
-                    android:layout_width="180dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="비밀번호 재설정" />
-
-                <Button
-                    android:id="@+id/signUpButton"
-                    android:layout_width="180dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="회원가입" />
-            </FrameLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="비밀번호 재설정" />
 
         </LinearLayout>
 

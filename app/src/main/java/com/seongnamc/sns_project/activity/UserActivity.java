@@ -59,7 +59,7 @@ import static com.seongnamc.sns_project.Utility.showToast;
         profileView = findViewById(R.id.profileView);
         findViewById(R.id.saveButton).setOnClickListener(onClickListener);
         findViewById(R.id.galleryButton).setOnClickListener(onClickListener);
-        findViewById(R.id.pictureBuutton).setOnClickListener(onClickListener);
+        findViewById(R.id.pictureButton).setOnClickListener(onClickListener);
         profileView.setOnClickListener(onClickListener);
 
         loaderLayout = findViewById(R.id.loaderLayout);
@@ -104,8 +104,8 @@ import static com.seongnamc.sns_project.Utility.showToast;
                     PostActivity(GalleryActivity.class,"image");
                     buttonBackgroundLayout.setVisibility(View.GONE);
                     break;
-                case R.id.pictureBuutton:
-                    myStartActivity(CameraActivity.class);
+                case R.id.pictureButton:
+                    CameraActivity(CameraActivity.class, 2);
                     buttonBackgroundLayout.setVisibility(View.GONE);
                     break;
 
@@ -217,6 +217,12 @@ import static com.seongnamc.sns_project.Utility.showToast;
          Intent intent = new Intent(this, c);
          intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
          intent.putExtra("media",media);
+         startActivityForResult(intent, 0);
+     }
+     private void CameraActivity(Class c, int camera) {
+         Intent intent = new Intent(this, c);
+         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+         intent.putExtra("camera", camera);
          startActivityForResult(intent, 0);
      }
 

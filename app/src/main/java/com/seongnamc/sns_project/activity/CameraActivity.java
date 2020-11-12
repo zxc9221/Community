@@ -26,6 +26,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.seongnamc.sns_project.R;
+import com.seongnamc.sns_project.fragment.Camera1BasicFragment;
 import com.seongnamc.sns_project.fragment.Camera2BasicFragment;
 
 import java.io.File;
@@ -83,12 +84,23 @@ public class CameraActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         setToolbarTitle(getResources().getString(R.string.app_name));
+
         if (null == savedInstanceState) {
-            Camera2BasicFragment camera2BasicFragment = new Camera2BasicFragment();
-            camera2BasicFragment.setOnImageAvailableListener(mOnImageAvailableListener);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, camera2BasicFragment)
-                    .commit();
+            int camera = getIntent().getExtras().getInt("camera");
+            if(camera == 1){
+                Camera1BasicFragment camera1BasicFragment = new Camera1BasicFragment();
+                camera1BasicFragment.setOnImageAvailableListener(mOnImageAvailableListener);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, camera1BasicFragment)
+                        .commit();
+            }
+            else {
+                Camera2BasicFragment camera2BasicFragment = new Camera2BasicFragment();
+                camera2BasicFragment.setOnImageAvailableListener(mOnImageAvailableListener);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, camera2BasicFragment)
+                        .commit();
+            }
         }
     }
 

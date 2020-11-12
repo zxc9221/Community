@@ -34,9 +34,6 @@ public class SignUpActivity extends BasicActivity {
         mAuth = FirebaseAuth.getInstance();
         
         findViewById(R.id.signUpButton).setOnClickListener(onClickListener);
-        findViewById(R.id.gotoLoginButton).setOnClickListener(onClickListener);
-
-
     }
 
     @Override
@@ -64,9 +61,6 @@ public class SignUpActivity extends BasicActivity {
             switch (v.getId()){
                 case R.id.signUpButton:
                     signUp();
-                    break;
-                case R.id.gotoLoginButton:
-                    myStartActivity(LoginActivity.class);
                     break;
             }
         }

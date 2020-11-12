@@ -44,7 +44,6 @@ import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -75,10 +74,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.lang.String;
 
 
-public class Camera2BasicFragment extends Fragment
+public class Camera1BasicFragment extends Fragment
         implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     /**
@@ -98,7 +96,7 @@ public class Camera2BasicFragment extends Fragment
     /**
      * Tag for the {@link Log}.
      */
-    private static final String TAG = "Camera2BasicFragment";
+    private static final String TAG = "Camera1BasicFragment";
 
     /**
      * Camera state: Showing camera preview.
@@ -126,12 +124,12 @@ public class Camera2BasicFragment extends Fragment
     private static final int STATE_PICTURE_TAKEN = 4;
 
     /**
-     * Max preview width that is guaranteed by Camera2 API
+     * Max preview width that is guaranteed by Camera1 API
      */
     private static final int MAX_PREVIEW_WIDTH = 1920;
 
     /**
-     * Max preview height that is guaranteed by Camera2 API
+     * Max preview height that is guaranteed by Camera1 API
      */
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
@@ -438,14 +436,14 @@ public class Camera2BasicFragment extends Fragment
         }
     }
 
-    public static Camera2BasicFragment newInstance() {
-        return new Camera2BasicFragment();
+    public static Camera1BasicFragment newInstance() {
+        return new Camera1BasicFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_camera2_basic, container, false);
+        return inflater.inflate(R.layout.fragment_camera1_basic, container, false);
     }
 
     @Override
@@ -620,7 +618,7 @@ public class Camera2BasicFragment extends Fragment
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
-            // Currently an NPE is thrown when the Camera2API is used but not supported on the
+            // Currently an NPE is thrown when the Camera1API is used but not supported on the
             // device this code runs.
             ErrorDialog.newInstance(getString(R.string.camera_error))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
@@ -628,7 +626,7 @@ public class Camera2BasicFragment extends Fragment
     }
 
     /**
-     * Opens the camera specified by {@link Camera2BasicFragment#mCameraId}.
+     * Opens the camera specified by {@link Camera1BasicFragment#mCameraId}.
      */
     private void openCamera(int width, int height) {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)

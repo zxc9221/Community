@@ -13,9 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center_vertical">
 
     <com.seongnamc.sns_project.view.AutoFitTextureView
         android:id="@+id/texture"
@@ -23,7 +25,25 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:foregroundGravity="center_vertical"
         android:layout_above="@id/control"/>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_centerInParent="true"
+        android:background="#FF0000" />
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="680dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="0dp"
+        android:background="#FF0000" />
+
 
     <LinearLayout
         android:id="@+id/control"

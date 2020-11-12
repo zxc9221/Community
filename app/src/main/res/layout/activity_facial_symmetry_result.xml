@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/view_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:layout_margin="20dp"
+        android:background="@drawable/box"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text="측정 결과"
+            android:textSize="40sp" />
+
+        <ImageView
+            android:id="@+id/face_view"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:padding="50dp"
+            app:srcCompat="@drawable/ic_mark" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="당신의 비대칭 정도는"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/pointvalue"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:gravity="center"
+                android:padding="3dp"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="입니다."
+                android:textSize="25sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:background="#BFBFBF"
+            android:gravity="center"
+            android:text="Ads"
+            android:textSize="50sp" />
+    </LinearLayout>
+
+</RelativeLayout>
